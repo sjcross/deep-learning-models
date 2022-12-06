@@ -59,6 +59,7 @@ model.fit_generator(
     callbacks=[model_checkpoint])
 
 model.save_weights(root_path+"UNetW.h5")
+# model.save('save_model.pb') # For BioImage.io format
 
 (image,mask,weight) = next(test_generator)
 
