@@ -8,7 +8,7 @@ image_height = 400
 num_classes = 2
 
 model = UNetModel(image_width, image_height, num_classes=num_classes)
-model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["acc"], sample_weight_mode="temporal")
+model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["acc"])
 model.load_weights(model_path)
 
 builder = saved_model.builder.SavedModelBuilder('saved_model/my_model')

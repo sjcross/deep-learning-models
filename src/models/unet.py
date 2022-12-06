@@ -44,8 +44,8 @@ def UNetModel(image_width,image_height,num_classes=1):
 	u4 = up_block(u3, c1, f[0])
 
 	t1 = layers.Conv2D(num_classes, (1, 1), padding="same", activation="sigmoid")(u4)
-	outputs = layers.Reshape((image_width*image_height,num_classes))(t1)
+	# outputs = layers.Reshape((image_width*image_height,num_classes))(t1)
 	
-	model = models.Model(inputs, outputs)
+	model = models.Model(inputs, t1)
 
 	return model

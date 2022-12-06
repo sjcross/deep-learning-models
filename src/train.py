@@ -13,7 +13,7 @@ from utils.fileloading import gen
 # Initialising the system
 num_classes = 2
 batch_size = 5
-epochs = 10
+epochs = 2
 image_width = 400
 image_height = 400
 seed = 2019
@@ -46,9 +46,11 @@ model_checkpoint = ModelCheckpoint('UNet_currentBest.hdf5', monitor='loss',verbo
 
 model = UNetModel(image_width, image_height,num_classes=num_classes)
 if (num_classes == 1):
-    model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["acc"], sample_weight_mode="temporal")
+    model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["acc"])
+    # model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["acc"], sample_weight_mode="temporal")
 else:
-    model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["acc"], sample_weight_mode="temporal")
+    model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["acc"])
+    # model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["acc"], sample_weight_mode="temporal")
 
 model.fit_generator(
     generator=train_generator,

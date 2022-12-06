@@ -36,20 +36,21 @@ def gen(image_path, mask_path,image_size, batch_size, num_classes):
         next_im = image_generator.next()
         next_mask = mask_generator.next()
 
-        # Creating a weight array of the desired size
-        num_slices = next_mask.shape[0];
-        next_weight = np.reshape(np.copy(next_mask)[:,:,:,0],(num_slices,image_size[0]*image_size[1]))
+        # # Creating a weight array of the desired size
+        # num_slices = next_mask.shape[0];
+        # next_weight = np.reshape(np.copy(next_mask)[:,:,:,0],(num_slices,image_size[0]*image_size[1]))
 
-        # For each slice, count the number of sample for each class, then calculate the corresponding weights
-        for slice in range (0,num_slices):
-            unique, counts = np.unique(next_mask[slice].astype(np.uint8), return_counts=True)
-            # weights = dict(zip(unique,1/(1+np.log(counts))))
-            weights = dict(zip(unique,image_size[0]*image_size[1]/(1+counts)))
+        # # For each slice, count the number of sample for each class, then calculate the corresponding weights
+        # for slice in range (0,num_slices):
+        #     unique, counts = np.unique(next_mask[slice].astype(np.uint8), return_counts=True)
+        #     # weights = dict(zip(unique,1/(1+np.log(counts))))
+        #     weights = dict(zip(unique,image_size[0]*image_size[1]/(1+counts)))
             
-            next_weight[slice] = [weights[val] for val in next_weight[slice].astype(np.uint8)]
+        #     next_weight[slice] = [weights[val] for val in next_weight[slice].astype(np.uint8)]
 
         # Adapting the mask size
         next_mask = to_categorical(next_mask,num_classes=num_classes,dtype=np.dtype('uint8'))
-        next_mask = np.reshape(next_mask,(num_slices,image_size[0]*image_size[1],num_classes))
+        # next_mask = np.reshape(next_mask,(num_slices,image_size[0]*image_size[1],num_classes))
 
-        yield(next_im,next_mask,next_weight)
+        yield(next_im,next_mask)
+        # yield(next_im,next_mask,next_weight)
