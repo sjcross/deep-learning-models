@@ -2,31 +2,32 @@ import math
 import os
 import random
 
-import tensorflow as tf
-import numpy as np
 import matplotlib.pyplot as plt
-
+import numpy as np
+import tensorflow as tf
 from tensorflow.keras.callbacks import ModelCheckpoint
+
 from models.unet import *
 from utils.fileloading import gen
 
 # Initialising the system
-num_classes = 2
-batch_size = 5
-epochs = 2
+num_classes = 1
+batch_size = 4
+epochs = 100
 image_width = 400
-image_height = 400
+image_height = 400 
 seed = 2019
 random.seed = seed
 tf.seed = seed
 
 # os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
-sess = tf.Session(config=config)
+# config = tf.ConfigProto()
+# config.gpu_options.allow_growth = True
+# sess = tf.Session(config=config)
 
 # Setting main parameters
-root_path = "C:\\Users\\steph\\Documents\\People\\Qiao Tong\\2022-10-06 DL scale segmentation\\TIF\\"
+# root_path = "C:\\Users\\steph\\Documents\\People\\Qiao Tong\\2022-10-06 DL scale segmentation\\TIF\\"
+root_path = "C:\\Users\\sc13967\\Desktop\\2022-12-02 Qiao\\"
 
 path, dirs, files = next(os.walk(root_path+"Train_raw\\Train"))
 train_size = math.ceil(len(files)/batch_size)
@@ -63,7 +64,8 @@ model.fit_generator(
 model.save_weights(root_path+"UNetW.h5")
 # model.save('save_model.pb') # For BioImage.io format
 
-(image,mask,weight) = next(test_generator)
+# (image,mask,weight) = next(test_generator)
+(image,mask) = next(test_generator)
 
 result = model.predict(image)
 
@@ -74,8 +76,8 @@ result = np.reshape(result,(num_slices,image_width,image_height,num_classes))
 fig = plt.figure()
 fig.subplots_adjust(hspace = 0.4, wspace = 0.4)
 ax = fig.add_subplot(1, 2, 1)
-ax.imshow(np.reshape(mask[0,:,:,1]*255, (image_width,image_height)), cmap="gray")
+ax.imshow(np.reshape(mask[0,:,:,0]*255, (image_width,image_height)), cmap="gray")
 ax = fig.add_subplot(1, 2, 2)
-ax.imshow(np.reshape(result[0,:,:,1]*255, (image_width,image_height)), cmap="gray")
+ax.imshow(np.reshape(result[0,:,:,0]*255, (image_width,image_height)), cmap="gray")
 
 plt.show()

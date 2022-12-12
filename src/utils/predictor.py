@@ -1,11 +1,12 @@
 import os
+
+import matplotlib.pyplot as plt
 import numpy as np
-from models.unet import UNetModel
 from skimage.transform import resize
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tifffile import TiffWriter
 
-import matplotlib.pyplot as plt
+from models.unet import UNetModel
 
 
 class Predictor():

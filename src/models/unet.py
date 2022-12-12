@@ -1,7 +1,6 @@
 import tensorflow as tf
+from tensorflow.keras import layers, models
 
-from tensorflow.keras import layers
-from tensorflow.keras import models
 
 def down_block(x, filters, k=(3,3), pad="same", strides=1):
 	c = layers.Conv2D(filters, k, padding=pad, strides=strides, activation="tanh")(x)

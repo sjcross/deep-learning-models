@@ -1,6 +1,7 @@
-from models.unet import UNetModel
-from tensorflow.keras.backend import get_session
 from tensorflow import saved_model
+from tensorflow.keras.backend import get_session
+
+from models.unet import UNetModel
 
 model_path = "C:\\Users\\steph\\Documents\\Programming\\Python Projects\\deep-learning-models\\UNet_currentBest.hdf5"
 image_width = 400

@@ -1,7 +1,7 @@
+import numpy as np
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.utils import to_categorical
 
-import numpy as np
 
 def gen(image_path, mask_path,image_size, batch_size, num_classes):
     data_gen_args = dict(rotation_range=5,
@@ -49,7 +49,8 @@ def gen(image_path, mask_path,image_size, batch_size, num_classes):
         #     next_weight[slice] = [weights[val] for val in next_weight[slice].astype(np.uint8)]
 
         # Adapting the mask size
-        next_mask = to_categorical(next_mask,num_classes=num_classes,dtype=np.dtype('uint8'))
+        if num_classes > 1:
+            next_mask = to_categorical(next_mask,num_classes=num_classes,dtype=np.dtype('uint8'))
         # next_mask = np.reshape(next_mask,(num_slices,image_size[0]*image_size[1],num_classes))
 
         yield(next_im,next_mask)
