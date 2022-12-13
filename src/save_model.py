@@ -3,16 +3,16 @@ from tensorflow.keras.backend import get_session
 
 from models.unet import UNetModel
 
-model_path = "C:\\Users\\steph\\Documents\\Programming\\Python Projects\\deep-learning-models\\UNet_currentBest.hdf5"
-image_width = 400
-image_height = 400
-num_classes = 2
+model_path = "C:\\Users\\steph\\Documents\\People\\Qiao Tong\\2022-10-06 DL scale segmentation\\2022-12-13_UNet_Scale_640px_16-256.hdf5"
+image_width = 640
+image_height = 640
+num_classes = 1
 
 model = UNetModel(image_width, image_height, num_classes=num_classes)
-model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["acc"])
 model.load_weights(model_path)
 
-builder = saved_model.builder.SavedModelBuilder('saved_model/my_model')
+# The following is from the page https://github.com/deepimagej/deepimagej-plugin/wiki/TensorFlow-models#tensorflow-models-in-deepimagej (accessed 2022-12-13)
+builder = saved_model.builder.SavedModelBuilder('saved_model/unet-scale-640')
 signature = saved_model.signature_def_utils.predict_signature_def(
             # dictionary of 'name' and model inputs (it can have more than one)
             inputs={'input': model.input},

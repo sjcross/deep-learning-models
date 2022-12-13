@@ -12,11 +12,11 @@ from utils.fileloading import gen
 
 # Initialising the system
 num_classes = 1
-batch_size = 4
+batch_size = 3
 epochs = 100
-image_width = 400
-image_height = 400 
-seed = 2019
+image_width = 640
+image_height = 640 
+seed = 2022
 random.seed = seed
 tf.seed = seed
 
@@ -26,8 +26,8 @@ tf.seed = seed
 # sess = tf.Session(config=config)
 
 # Setting main parameters
-# root_path = "C:\\Users\\steph\\Documents\\People\\Qiao Tong\\2022-10-06 DL scale segmentation\\TIF\\"
-root_path = "C:\\Users\\sc13967\\Desktop\\2022-12-02 Qiao\\"
+root_path = "C:\\Users\\steph\\Documents\\People\\Qiao Tong\\2022-10-06 DL scale segmentation\\TIF\\"
+# root_path = "C:\\Users\\sc13967\\Desktop\\2022-12-02 Qiao\\"
 
 path, dirs, files = next(os.walk(root_path+"Train_raw\\Train"))
 train_size = math.ceil(len(files)/batch_size)
@@ -48,7 +48,7 @@ model_checkpoint = ModelCheckpoint('UNet_currentBest.hdf5', monitor='loss',verbo
 model = UNetModel(image_width, image_height,num_classes=num_classes)
 if (num_classes == 1):
     model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["acc"])
-    # model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["acc"], sample_weight_mode="temporal")
+    # model.compile(optimizer="adam", loss="binary_crossentropy", metrics=6["acc"], sample_weight_mode="temporal")
 else:
     model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["acc"])
     # model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["acc"], sample_weight_mode="temporal")

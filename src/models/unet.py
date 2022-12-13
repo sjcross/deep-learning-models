@@ -3,21 +3,21 @@ from tensorflow.keras import layers, models
 
 
 def down_block(x, filters, k=(3,3), pad="same", strides=1):
-	c = layers.Conv2D(filters, k, padding=pad, strides=strides, activation="tanh")(x)
-	c = layers.Conv2D(filters, k, padding=pad, strides=strides, activation="tanh")(c)
+	c = layers.Conv2D(filters, k, padding=pad, strides=strides, activation="relu")(x)
+	c = layers.Conv2D(filters, k, padding=pad, strides=strides, activation="relu")(c)
 	p = layers.MaxPool2D((2,2), (2,2))(c)
 	return c,p
 
 def up_block(x, skip, filters, k=(3,3), pad="same", strides=1):
 	us = layers.UpSampling2D((2,2))(x)
 	con = layers.Concatenate()([us, skip])
-	c = layers.Conv2D(filters, k, padding=pad, strides=strides, activation="tanh")(con)
-	c = layers.Conv2D(filters, k, padding=pad, strides=strides, activation="tanh")(c)
+	c = layers.Conv2D(filters, k, padding=pad, strides=strides, activation="relu")(con)
+	c = layers.Conv2D(filters, k, padding=pad, strides=strides, activation="relu")(c)
 	return c
 
 def bottleneck(x, filters, k=(3,3), pad="same", strides=1):
-	c = layers.Conv2D(filters, k, padding=pad, strides=strides, activation="tanh")(x)
-	c = layers.Conv2D(filters, k, padding=pad, strides=strides, activation="tanh")(c)
+	c = layers.Conv2D(filters, k, padding=pad, strides=strides, activation="relu")(x)
+	c = layers.Conv2D(filters, k, padding=pad, strides=strides, activation="relu")(c)
 	return c
 
 def class_weighted_pixelwise_crossentropy(target, output):
