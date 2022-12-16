@@ -15,14 +15,7 @@ class Predictor():
         self._image_width = image_width
         self._image_height = image_height
 
-        self._model = UNetModel(
-            image_width, image_height, num_classes=num_classes)
-        if (num_classes == 1):
-            self._model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["acc"])
-            # self._model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["acc"], sample_weight_mode="temporal")
-        else:
-            self._model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["acc"])            
-            # self._model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["acc"], sample_weight_mode="temporal")            
+        self._model = UNetModel(image_width, image_height, num_classes=num_classes)           
         self._model.load_weights(model_path)     
 
         self._prev_image = np.zeros((1, 1))
@@ -56,8 +49,9 @@ class Predictor():
             print("    Processing %i/%i (\"%s\")" % (count+1, total, filename), end="\r")
                         
             image = image_generator.next()
-                        
+            
             result = self._model.predict(image)
+
             # image = np.reshape(image, (image.shape[0], self._image_width, self._image_height, 1))
             image = (((image - np.min(image))/(np.max(image) - np.min(image)))*255).astype(np.uint8)
             # result = np.reshape(result, (image.shape[0], self._image_width, self._image_height, self._num_classes))

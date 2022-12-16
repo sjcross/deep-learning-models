@@ -4,12 +4,12 @@ from tensorflow.keras.utils import to_categorical
 
 
 def gen(image_path, mask_path,image_size, batch_size, num_classes):
-    data_gen_args = dict(rotation_range=5,
-                         width_shift_range=0.1,
-                         height_shift_range=0.1,
+    data_gen_args = dict(rotation_range=10,
+                         width_shift_range=0.2,
+                         height_shift_range=0.2,
                          horizontal_flip=True,
                          vertical_flip=True,
-                         zoom_range=0.1)
+                         zoom_range=0.2)
     image_datagen = ImageDataGenerator(**data_gen_args)
     mask_datagen = ImageDataGenerator(**data_gen_args)
 
