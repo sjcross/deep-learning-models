@@ -14,7 +14,7 @@ batch_size = 4
 epochs = 200
 image_width = 640
 image_height = 640 
-seed = 2019
+seed = 2023
 random.seed = seed
 tf.seed = seed
 
@@ -25,7 +25,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 # Setting main parameters
 # root_path = "C:\\Users\\steph\\Documents\\People\\Qiao Tong\\2022-10-06 DL scale segmentation\\TIF\\"
-root_path = "C:\\Users\\sc13967\\Desktop\\2022-12-02 Qiao\\"
+root_path = "C:\\Users\\sc13967\\Desktop\\2023-01-04 No TRAP images\\"
 
 path, dirs, files = next(os.walk(root_path+"Train_raw\\Train"))
 train_size = math.ceil(len(files)/batch_size)

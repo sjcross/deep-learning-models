@@ -1,3 +1,6 @@
+# Specific to this project
+saved_model/
+
 # Models
 *.hdf5
 *.h5
