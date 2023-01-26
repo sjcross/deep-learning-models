@@ -8,7 +8,7 @@ from tifffile import TiffWriter
 from scipy.spatial import distance
 from PIL import Image
 
-from models.unet import UNetModel
+from unet.unet import UNetModel
 
 
 class Predictor():

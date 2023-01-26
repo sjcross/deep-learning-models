@@ -1,7 +1,7 @@
 from tensorflow import saved_model
 from tensorflow.keras.backend import get_session
 
-from models.unet import UNetModel
+from unet import UNetModel
 
 model_path = "Z:\\Stephen\\People\\T\\Qiao Tong\\2022-10-06 DL scale segmentation\\2023-01-11_UNet_currentBest_E52_Acc0.984_ValLoss0.024.hdf5"
 image_width = 640

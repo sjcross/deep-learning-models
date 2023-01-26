@@ -5,7 +5,7 @@ import random
 import tensorflow as tf
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 
-from models.unet import *
+from unet import *
 from utils.fileloading import gen
 
 # Initialising the system
