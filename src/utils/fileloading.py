@@ -34,6 +34,7 @@ def gen(image_path, mask_path,image_size, batch_size, num_classes):
     while True:
         # Loading next image and mask
         next_im = image_generator.next()
+        next_im = next_im / 255
         next_mask = mask_generator.next()
 
         # # Creating a weight array of the desired size
@@ -55,3 +56,4 @@ def gen(image_path, mask_path,image_size, batch_size, num_classes):
 
         yield(next_im,next_mask)
         # yield(next_im,next_mask,next_weight)
+

@@ -5,6 +5,8 @@ import numpy as np
 from skimage.transform import resize
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tifffile import TiffWriter
+from scipy.spatial import distance
+from PIL import Image
 
 from models.unet import UNetModel
 
@@ -20,8 +22,10 @@ class Predictor():
 
         self._prev_image = np.zeros((1, 1))
         self._prev_filename = ""
+        self._dice_sum = 0
+        self._dice_n = 0
 
-    def process_folder(self, input_image_path, output_image_path):
+    def process_folder(self, input_image_path, output_image_path, input_mask_path=None):        
         # Creating output folder and tif writers
         if not os.path.exists(output_image_path):
             os.makedirs(output_image_path)
@@ -44,10 +48,7 @@ class Predictor():
 
         tif_options = dict(compress=5)
         
-        total = len(image_generator.filenames)
-        for (count, filename) in enumerate(image_generator.filenames):
-            print("    Processing %i/%i (\"%s\")" % (count+1, total, filename), end="\r")
-                        
+        for filename in image_generator.filenames:
             image = image_generator.next()
             
             result = self._model.predict(image)
@@ -61,8 +62,25 @@ class Predictor():
 
             out_name = filename.split("\\")[-1]
             out_name = os.path.splitext(out_name)[0]
-            raw_tif = TiffWriter(output_image_path+out_name+".tif", bigtiff=True, append=False)
-            raw_tif.save((result * 255).astype(np.uint8), **tif_options)
 
-        # Closing tif writers
-        raw_tif.close()
+            if input_mask_path is not None:
+                mask_im = plt.imread(input_mask_path+filename)
+                result_1d = result.flatten() > 0.5
+                mask_im_1d = mask_im.flatten() > 0.5
+                dice = distance.dice(mask_im_1d,result_1d)                
+                self._dice_n = self._dice_n + 1
+                self._dice_sum = self._dice_sum + dice
+                
+                rgbArray = np.zeros((raw_im.shape[0],raw_im.shape[1],3), 'uint8')
+                rgbArray[..., 0] = (result>0.5)*255
+                rgbArray[..., 1] = mask_im*255                
+                img = Image.fromarray(rgbArray)
+                img.save(output_image_path+"\\"+out_name+("_D%.4f"%dice)+".png")
+                
+            else:
+                raw_tif = TiffWriter(output_image_path+out_name+".tif", bigtiff=False, append=False)
+                raw_tif.save((result * 255).astype(np.uint8), **tif_options)                            
+                raw_tif.close()            
+            
+    def get_dice(self):
+        return self._dice_sum/self._dice_n

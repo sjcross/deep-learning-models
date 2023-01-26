@@ -1,5 +1,9 @@
+import numpy as np
+import tensorflow.keras.backend as K
 import tensorflow as tf
+
 from tensorflow.keras import layers, models
+
 
 
 def down_block(x, filters, k=(3,3), pad="same", strides=1):
@@ -18,13 +22,17 @@ def up_block(x, skip, filters, k=(3,3), pad="same", strides=1):
 def bottleneck(x, filters, k=(3,3), pad="same", strides=1):
 	c = layers.Conv2D(filters, k, padding=pad, strides=strides, activation="relu")(x)
 	c = layers.Conv2D(filters, k, padding=pad, strides=strides, activation="relu")(c)
-	return c
+	return c            
 
-def class_weighted_pixelwise_crossentropy(target, output):
-    output = tf.clip_by_value(output, 10e-8, 1.-10e-8)
-    weights = [0.1, 0.9]
-    return -tf.reduce_sum(target * weights * tf.log(output))
+def dice_coef(y_true, y_pred):
+	y_true_f = K.flatten(y_true)
+	y_pred_f = K.flatten(y_pred)
+	intersection = K.sum(y_true_f * y_pred_f)  
+	return (2. * intersection + 100) / (K.sum(y_true_f) + K.sum(y_pred_f) + 100)
 
+def dice_coef_loss(y_true, y_pred):
+	return 1 - dice_coef(y_true, y_pred)                                                                                                                                                                                                                                                                                                                                                                                                                                                
+  
 def UNetModel(image_width,image_height,num_classes=1):
 	f = [16, 32, 64, 128, 256]
 	inputs = layers.Input((image_width, image_height, 1))

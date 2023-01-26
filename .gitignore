@@ -1,5 +1,7 @@
 # Specific to this project
 saved_model/
+log/
+*.zip
 
 # Models
 *.hdf5
