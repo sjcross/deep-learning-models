@@ -8,7 +8,7 @@ from tifffile import TiffWriter
 from scipy.spatial import distance
 from PIL import Image
 
-from unet.unet import UNetModel
+from unet import UNetModel
 
 
 class Predictor():
@@ -50,7 +50,8 @@ class Predictor():
         
         for filename in image_generator.filenames:
             image = image_generator.next()
-            
+            image = image / 255
+
             result = self._model.predict(image)
 
             # image = np.reshape(image, (image.shape[0], self._image_width, self._image_height, 1))
