@@ -5,14 +5,21 @@ from tensorflow.keras.utils import to_categorical
 import matplotlib.pyplot as plt
 
 def gen(image_path, mask_path,image_size, batch_size, num_classes):
-    data_gen_args = dict(rotation_range=0,
-                         width_shift_range=0,
-                         height_shift_range=0,
+    image_data_gen_args = dict(brightness_range=[0.3,1.4],
+                         rotation_range=90,
+                         width_shift_range=0.1,
+                         height_shift_range=0.1,
                          horizontal_flip=True,
                          vertical_flip=True,
                          zoom_range=0)
-    image_datagen = ImageDataGenerator(**data_gen_args)
-    mask_datagen = ImageDataGenerator(**data_gen_args)
+    image_datagen = ImageDataGenerator(**image_data_gen_args)
+    mask_data_gen_args = dict(rotation_range=90,
+                         width_shift_range=0.1,
+                         height_shift_range=0.1,
+                         horizontal_flip=True,
+                         vertical_flip=True,
+                         zoom_range=0)
+    mask_datagen = ImageDataGenerator(**mask_data_gen_args)
 
     image_generator = image_datagen.flow_from_directory(
         image_path,
@@ -35,9 +42,9 @@ def gen(image_path, mask_path,image_size, batch_size, num_classes):
     while True:
         # Loading next image and mask
         next_im = image_generator.next()
-        next_im = next_im / 255
+        next_im = next_im
         next_mask = mask_generator.next()
-        next_mask = next_mask / 94
+        next_mask = next_mask
 
         # # Creating a weight array of the desired size
         # num_slices = next_mask.shape[0];
@@ -56,7 +63,7 @@ def gen(image_path, mask_path,image_size, batch_size, num_classes):
             next_mask = to_categorical(next_mask,num_classes=num_classes,dtype=np.dtype('uint8'))
         # next_mask = np.reshape(next_mask,(num_slices,image_size[0]*image_size[1],num_classes))
 
-        # print(next_im.shape)
+        # print(next_im.shape,np.max(next_mask))
         # plt.subplot(1,2,1)
         # plt.imshow(next_im[0,:,:,0])
         # plt.subplot(1,2,2)

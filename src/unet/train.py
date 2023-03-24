@@ -10,28 +10,28 @@ from fileloading import gen
 
 # Initialising the system
 num_classes = 1
-batch_size = 2
-epochs = 200
-image_width = 512
-image_height = 512 
+batch_size = 1
+epochs = 500
+image_width = 800
+image_height = 800 
 seed = 2023
 random.seed = seed
 tf.seed = seed
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-# config = tf.ConfigProto()
-# config.gpu_options.allow_growth = True
-# sess = tf.Session(config=config)
+# os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+sess = tf.Session(config=config)
 
 # Setting main parameters
 # root_path = "C:\\Users\\steph\\Documents\\People\\Qiao Tong\\2022-10-06 DL scale segmentation\\TIF\\"
-root_path = "C:\\Users\\steph\\Documents\\People\\Christoph Wuelfing\\2022-11-23 SpinSR cell intensity analysis\\2023-02-09 Training 2\\"
+root_path = "C:\\Users\\sc13967\\Desktop\\2023-03-22 Scales with fl and Incucyte\\"
 # model_path = "Z:\\Stephen\\People\\T\\Qiao Tong\\2022-10-06 DL scale segmentation\\2023-01-11_UNet_currentBest_E52_Acc0.984_ValLoss0.024.hdf5"
 model_path = None
 
-path, dirs, files = next(os.walk(root_path+"Train_raw\\Class1"))
+path, dirs, files = next(os.walk(root_path+"Train_raw\\Train"))
 train_size = math.ceil(len(files)/batch_size)
-path, dirs, files = next(os.walk(root_path+"Valid_raw\\Class1"))
+path, dirs, files = next(os.walk(root_path+"Valid_raw\\Valid"))
 val_size = math.ceil(len(files)/batch_size)
 
 train_generator = gen(root_path+"Train_raw\\",root_path+"Train_class\\",image_size=(image_width,image_height),batch_size=batch_size,num_classes=num_classes)
@@ -56,8 +56,8 @@ model.fit_generator(
     generator=train_generator,
     validation_data=valid_generator,
     validation_steps=val_size,
-    steps_per_epoch=train_size,
+    steps_per_epoch=200,
     epochs=epochs,
-    callbacks=[model_checkpoint,tboard])
+    callbacks=[model_checkpoint])
 
 model.save_weights(root_path+"UNet_final.hdf5")
