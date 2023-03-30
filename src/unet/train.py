@@ -12,8 +12,8 @@ from fileloading import gen
 num_classes = 1
 batch_size = 1
 epochs = 500
-image_width = 800
-image_height = 800 
+image_width = 960
+image_height = 960 
 seed = 2023
 random.seed = seed
 tf.seed = seed
@@ -26,7 +26,7 @@ sess = tf.Session(config=config)
 # Setting main parameters
 # root_path = "C:\\Users\\steph\\Documents\\People\\Qiao Tong\\2022-10-06 DL scale segmentation\\TIF\\"
 root_path = "C:\\Users\\sc13967\\Desktop\\2023-03-22 Scales with fl and Incucyte\\"
-# model_path = "Z:\\Stephen\\People\\T\\Qiao Tong\\2022-10-06 DL scale segmentation\\2023-01-11_UNet_currentBest_E52_Acc0.984_ValLoss0.024.hdf5"
+# model_path = "F:\\Python Projects\\deep-learning-models\\UNet_currentBest_E58_acc0.954_ValLoss0.112.hdf5"
 model_path = None
 
 path, dirs, files = next(os.walk(root_path+"Train_raw\\Train"))
@@ -38,7 +38,7 @@ train_generator = gen(root_path+"Train_raw\\",root_path+"Train_class\\",image_si
 valid_generator = gen(root_path+"Valid_raw\\",root_path+"Valid_class\\",image_size=(image_width,image_height),batch_size=batch_size,num_classes=num_classes)
 # test_generator = gen(root_path+"Test_raw\\",root_path+"Test_class\\",image_size=(image_width,image_height),batch_size=batch_size,num_classes=num_classes)
 
-model_checkpoint = ModelCheckpoint('UNet_currentBest_E{epoch}_acc{acc:.3f}_ValLoss{val_loss:.3f}.hdf5', monitor='val_loss',verbose=1, save_best_only=True)
+model_checkpoint = ModelCheckpoint('UNet_currentBest_E{epoch}_Valacc{val_acc:.3f}_ValLoss{val_loss:.3f}.hdf5', monitor='val_acc',verbose=1, save_best_only=True)
 tboard = TensorBoard(log_dir="log",histogram_freq=0, write_graph=True, write_images=False)
 
 model = UNetModel(image_width, image_height,num_classes=num_classes)
@@ -56,7 +56,7 @@ model.fit_generator(
     generator=train_generator,
     validation_data=valid_generator,
     validation_steps=val_size,
-    steps_per_epoch=200,
+    steps_per_epoch=train_size,
     epochs=epochs,
     callbacks=[model_checkpoint])
 
