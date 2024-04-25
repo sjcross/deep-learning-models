@@ -50,16 +50,15 @@ class Predictor():
         
         for filename in image_generator.filenames:
             image = image_generator.next()
-            image = image / 255
 
             result = self._model.predict(image)
 
             # image = np.reshape(image, (image.shape[0], self._image_width, self._image_height, 1))
             image = (((image - np.min(image))/(np.max(image) - np.min(image)))*255).astype(np.uint8)
-            # result = np.reshape(result, (image.shape[0], self._image_width, self._image_height, self._num_classes))
+            result = np.reshape(result, (image.shape[0], self._image_width, self._image_height, self._num_classes))
 
             raw_im = plt.imread(input_image_path+filename)
-            result = resize(result[0, :, :, 0],(raw_im.shape[0],raw_im.shape[1]))
+            result = resize(result[0, :, :, 2],(raw_im.shape[0],raw_im.shape[1]))
 
             out_name = filename.split("\\")[-1]
             out_name = os.path.splitext(out_name)[0]

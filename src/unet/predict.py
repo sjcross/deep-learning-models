@@ -5,12 +5,12 @@ from unet import *
 from fileloading import gen
 
 # Setting parameters
-num_classes = 1
-image_width = 512
-image_height = 512
-model_path = "C:\\Users\\steph\\Documents\\People\\Christoph Wuelfing\\2022-11-23 SpinSR cell intensity analysis\\2023-02-09 Training 1\\UNet_currentBest_E25_acc0.986_ValLoss0.045.hdf5"
-input_image_path = "C:\\Users\\steph\\Documents\\People\\Christoph Wuelfing\\2022-11-23 SpinSR cell intensity analysis\\2023-02-09 Test images 512\\"
-output_image_path = "C:\\Users\\steph\\Documents\\People\\Christoph Wuelfing\\2022-11-23 SpinSR cell intensity analysis\\Test output\\"
+num_classes = 3
+image_width = 640
+image_height = 640
+model_path = "Z:\\Stephen\\People\\V\\Jordan Vautrinot\\2023-04-19 Cell analysis\\Chip analysis\\Models\\2023-07-20 Chip class\\UNet_currentBest_E124_acc0.969_ValLoss0.033.hdf5"
+input_image_path = "Z:\\Stephen\\People\\V\\Jordan Vautrinot\\2023-04-19 Cell analysis\\Chip analysis\\Training sets\\2023-07-18 Two class whole\\Test_raw\\"
+output_image_path = "Z:\\Stephen\\People\\V\\Jordan Vautrinot\\2023-04-19 Cell analysis\\Chip analysis\\Training sets\\2023-07-18 Two class whole\\Test_output\\"
 # input_image_path = "C:\\Users\\steph\\Desktop\\test\\"
 # output_image_path = "C:\\Users\\steph\\Desktop\\testout\\"
 

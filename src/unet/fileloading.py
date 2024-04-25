@@ -4,29 +4,36 @@ from tensorflow.keras.utils import to_categorical
 
 import matplotlib.pyplot as plt
 
-def gen(image_path, mask_path,image_size, batch_size, num_classes):
-    image_data_gen_args = dict(brightness_range=[0.3,1.4],
-                         rotation_range=90,
-                         width_shift_range=0.1,
-                         height_shift_range=0.1,
-                         horizontal_flip=True,
-                         vertical_flip=True,
+def gen(image_path, mask_path, image_size, image_channels, batch_size, num_classes):
+    image_data_gen_args = dict(
+                        # brightness_range=[0.3,1.4],
+                        #  rotation_range=90,
+                         width_shift_range=0.2,
+                         height_shift_range=0.2,
+                         horizontal_flip=False,
+                         vertical_flip=False,
                          zoom_range=0)
     image_datagen = ImageDataGenerator(**image_data_gen_args)
-    mask_data_gen_args = dict(rotation_range=90,
-                         width_shift_range=0.1,
-                         height_shift_range=0.1,
-                         horizontal_flip=True,
-                         vertical_flip=True,
+    mask_data_gen_args = dict(
+                        #  rotation_range=90,
+                         width_shift_range=0.2,
+                         height_shift_range=0.2,
+                         horizontal_flip=False,
+                         vertical_flip=False,
                          zoom_range=0)
     mask_datagen = ImageDataGenerator(**mask_data_gen_args)
+
+    if image_channels == 1:
+        color_mode = 'grayscale'
+    elif image_channels == 3:
+        color_mode = 'rgb'
 
     image_generator = image_datagen.flow_from_directory(
         image_path,
         class_mode=None,
         seed=42,
         batch_size=batch_size,
-        color_mode='grayscale',
+        color_mode=color_mode,
         target_size=image_size)
 
     mask_generator = mask_datagen.flow_from_directory(

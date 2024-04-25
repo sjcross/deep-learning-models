@@ -33,9 +33,9 @@ def dice_coef(y_true, y_pred):
 def dice_coef_loss(y_true, y_pred):
 	return 1 - dice_coef(y_true, y_pred)                                                                                                                                                                                                                                                                                                                                                                                                                                                
   
-def UNetModel(image_width,image_height,num_classes=1):
+def UNetModel(image_width,image_height,image_channels=1,num_classes=1):
 	f = [16, 32, 64, 128, 256]
-	inputs = layers.Input((image_width, image_height, 1))
+	inputs = layers.Input((image_width, image_height, image_channels))
 
 	p0 = inputs
 	c1, p1 = down_block(p0, f[0])
