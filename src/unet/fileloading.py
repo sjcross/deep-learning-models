@@ -2,7 +2,10 @@ import numpy as np
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.utils import to_categorical
 
+import random
 import matplotlib.pyplot as plt
+
+import imageio as io
 
 def gen(image_path, mask_path, image_size, image_channels, batch_size, num_classes):
     image_data_gen_args = dict(
@@ -49,9 +52,7 @@ def gen(image_path, mask_path, image_size, image_channels, batch_size, num_class
     while True:
         # Loading next image and mask
         next_im = image_generator.next()
-        next_im = next_im
         next_mask = mask_generator.next()
-        next_mask = next_mask
 
         # # Creating a weight array of the desired size
         # num_slices = next_mask.shape[0];

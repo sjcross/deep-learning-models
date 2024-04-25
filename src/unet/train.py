@@ -56,7 +56,7 @@ train_generator = gen(root_path+"train_raw\\",root_path+"train_class\\",image_si
 valid_generator = gen(root_path+"valid_raw\\",root_path+"valid_class\\",image_size=(image_width,image_height),image_channels=image_channels,batch_size=batch_size,num_classes=num_classes)
 # test_generator = gen(root_path+"Test_raw\\",root_path+"Test_class\\",image_size=(image_width,image_height),batch_size=batch_size,num_classes=num_classes)
 
-model_checkpoint = ModelCheckpoint('UNet_currentBest_E{epoch}_acc{acc:.3f}_ValLoss{val_loss:.3f}.hdf5', monitor='val_loss',verbose=1, save_best_only=True)
+model_checkpoint = ModelCheckpoint('UNet_currentBest_E{epoch}_Valacc{val_acc:.3f}_ValLoss{val_loss:.3f}.hdf5', monitor='val_acc',verbose=1, save_best_only=True)
 tboard = TensorBoard(log_dir="log",histogram_freq=0, write_graph=True, write_images=False)
 
 model = UNetModel(image_width, image_height,image_channels=image_channels,num_classes=num_classes)
@@ -74,6 +74,7 @@ model.fit_generator(
     generator=train_generator,
     validation_data=valid_generator,
     validation_steps=val_size,
+    steps_per_epoch=train_size,
     steps_per_epoch=train_size,
     epochs=epochs,
     callbacks=[model_checkpoint])
