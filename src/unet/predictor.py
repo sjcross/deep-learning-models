@@ -12,12 +12,12 @@ from unet import UNetModel
 
 
 class Predictor():
-    def __init__(self, num_classes, image_width, image_height, model_path):
+    def __init__(self, num_classes, image_height, image_width, model_path):
         self._num_classes = num_classes
-        self._image_width = image_width
         self._image_height = image_height
-
-        self._model = UNetModel(image_width, image_height, num_classes=num_classes)           
+        self._image_width = image_width
+        
+        self._model = UNetModel(image_height=image_height, image_width=image_width, num_classes=num_classes)           
         self._model.load_weights(model_path)     
 
         self._prev_image = np.zeros((1, 1))
@@ -41,7 +41,7 @@ class Predictor():
             batch_size=1,
             color_mode='grayscale',
             shuffle=False,
-            target_size=(self._image_width, self._image_height))
+            target_size=(self._image_height, self._image_width))
 
         if os.path.exists("%s.tif" % root_filename):
             os.remove("%s.tif" % root_filename)
@@ -55,10 +55,11 @@ class Predictor():
 
             # image = np.reshape(image, (image.shape[0], self._image_width, self._image_height, 1))
             image = (((image - np.min(image))/(np.max(image) - np.min(image)))*255).astype(np.uint8)
-            result = np.reshape(result, (image.shape[0], self._image_width, self._image_height, self._num_classes))
+            result = np.reshape(result, (image.shape[0], self._image_height, self._image_width, self._num_classes))
 
             raw_im = plt.imread(input_image_path+filename)
-            result = resize(result[0, :, :, 2],(raw_im.shape[0],raw_im.shape[1]))
+            print(result.shape)
+            result = resize(result[0, :, :, 1],(raw_im.shape[0],raw_im.shape[1]))
 
             out_name = filename.split("\\")[-1]
             out_name = os.path.splitext(out_name)[0]

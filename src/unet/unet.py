@@ -33,9 +33,10 @@ def dice_coef(y_true, y_pred):
 def dice_coef_loss(y_true, y_pred):
 	return 1 - dice_coef(y_true, y_pred)                                                                                                                                                                                                                                                                                                                                                                                                                                                
   
-def UNetModel(image_width,image_height,image_channels=1,num_classes=1):
-	f = [16, 32, 64, 128, 256]
-	inputs = layers.Input((image_width, image_height, image_channels))
+def UNetModel(image_height,image_width,image_channels=1,num_classes=1):
+	f = [8, 16, 32, 64, 128]
+	# f = [16, 32, 64, 128, 256]
+	inputs = layers.Input((image_height, image_width, image_channels))
 
 	p0 = inputs
 	c1, p1 = down_block(p0, f[0])
@@ -50,7 +51,10 @@ def UNetModel(image_width,image_height,image_channels=1,num_classes=1):
 	u3 = up_block(u2, c2, f[1])
 	u4 = up_block(u3, c1, f[0])
 
-	t1 = layers.Conv2D(num_classes, (1, 1), padding="same", activation="sigmoid")(u4)
+	if num_classes > 1:
+		t1 = layers.Conv2D(num_classes, (1, 1), padding="same", activation="softmax")(u4)
+	else:
+		t1 = layers.Conv2D(num_classes, (1, 1), padding="same", activation="sigmoid")(u4)
 	# outputs = layers.Reshape((image_width*image_height,num_classes))(t1)
 	
 	model = models.Model(inputs, t1)

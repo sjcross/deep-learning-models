@@ -5,6 +5,8 @@ from tensorflow.keras.backend import get_session
 
 from unet import UNetModel
 
+num_classes = 5
+
 parser = argparse.ArgumentParser()
 required = parser.add_argument_group('required arguments')
 required.add_argument("-mp", "--model_path", type=str, required=True)
@@ -14,6 +16,7 @@ required.add_argument("-on", "--output_name", type=str, required=True)
 
 optional = parser.add_argument_group('optional arguments')
 required.add_argument("-ic", "--im_channels", type=int, required=False, default=1)
+optional.add_argument("-nc", "--num_classes", type=int, required=False, default=1)
 
 args = parser.parse_args()
 
@@ -22,8 +25,9 @@ image_width = args.im_width
 image_height = args.im_height
 image_channels = args.im_channels
 output_name = args.output_name
+num_classes = args.num_classes
 
-model = UNetModel(image_width, image_height, image_channels=image_channels)
+model = UNetModel(image_height=image_height,image_width=image_width, image_channels=image_channels, num_classes=num_classes)
 model.load_weights(model_path)
 
 # The following is from the page https://github.com/deepimagej/deepimagej-plugin/wiki/TensorFlow-models#tensorflow-models-in-deepimagej (accessed 2022-12-13)
