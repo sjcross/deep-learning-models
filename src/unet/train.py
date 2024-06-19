@@ -10,10 +10,6 @@ from unet import *
 from fileloading import gen
 
 # Initialising the system
-batch_size = 4
-epochs = 2000
-# image_width = 800
-# image_height = 800 
 seed = 2023
 random.seed = seed
 tf.seed = seed
@@ -28,6 +24,8 @@ required.add_argument("-ih", "--im_height", type=int, required=True)
 optional = parser.add_argument_group('optional arguments')
 optional.add_argument("-ic", "--im_channels", type=int, required=False, default=1)
 optional.add_argument("-nc", "--num_classes", type=int, required=False, default=1)
+optional.add_argument("-bs", "--batch_size", type=int, required=False, default=1)
+optional.add_argument("-e", "--epochs", type=int, required=False, default=1000)
 
 args = parser.parse_args()
 
@@ -36,6 +34,8 @@ image_width = args.im_width
 image_height = args.im_height
 image_channels = args.im_channels
 num_classes = args.num_classes
+batch_size = args.batch_size
+epochs = args.epochs
 
 # os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 config = tf.ConfigProto()

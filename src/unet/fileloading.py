@@ -11,7 +11,7 @@ import imageio as io
 def gen(image_path, mask_path, image_height, image_width, image_channels, batch_size, num_classes):
     image_data_gen_args = dict(
                         #  brightness_range=[0.5,1.4],
-                         rotation_range=30,
+                         rotation_range=180,
                          shear_range=0.2,
                          width_shift_range=0.2,
                          height_shift_range=0.2,
@@ -21,7 +21,7 @@ def gen(image_path, mask_path, image_height, image_width, image_channels, batch_
     image_datagen = ImageDataGenerator(**image_data_gen_args)
     mask_data_gen_args = dict(
                         #  brightness_range=[0.5,1.4],
-                         rotation_range=30,
+                         rotation_range=180,
                          shear_range=0.2,
                          width_shift_range=0.2,
                          height_shift_range=0.2,
