@@ -5,8 +5,6 @@ from tensorflow.keras.backend import get_session
 
 from unet import UNetModel
 
-num_classes = 5
-
 parser = argparse.ArgumentParser()
 required = parser.add_argument_group('required arguments')
 required.add_argument("-mp", "--model_path", type=str, required=True)
