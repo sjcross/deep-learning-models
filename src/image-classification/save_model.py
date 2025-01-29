@@ -25,9 +25,9 @@ num_classes = args.num_classes
 from tensorflow import saved_model
 from tensorflow.keras.backend import get_session
 
-from unet import UNetModel
+from model import ImageClassificationModel
 
-model = UNetModel(image_height=image_height,image_width=image_width, image_channels=image_channels, num_classes=num_classes)
+model = ImageClassificationModel(image_height=image_height,image_width=image_width, image_channels=image_channels, num_classes=num_classes)
 model.load_weights(model_path)
 
 # The following is from the page https://github.com/deepimagej/deepimagej-plugin/wiki/TensorFlow-models#tensorflow-models-in-deepimagej (accessed 2022-12-13)

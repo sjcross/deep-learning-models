@@ -7,23 +7,21 @@ def gen(image_path, mask_path, image_height, image_width, image_channels, batch_
     image_data_gen_args = dict(
                         #  brightness_range=[0.5,1.4],
                          rotation_range=180,
-                        #  rotation_range=25,
-                        #  shear_range=0.2,
+                         shear_range=0.2,
                          width_shift_range=0.2,
                          height_shift_range=0.2,
                          horizontal_flip=True,
-                         vertical_flip=True,
+                         vertical_flip=False,
                          zoom_range=0.2)
     image_datagen = ImageDataGenerator(**image_data_gen_args)
     mask_data_gen_args = dict(
                         #  brightness_range=[0.5,1.4],
                          rotation_range=180,
-                        #  rotation_range=25,
-                        #  shear_range=0.2,
+                         shear_range=0.2,
                          width_shift_range=0.2,
                          height_shift_range=0.2,
                          horizontal_flip=True,
-                         vertical_flip=True,
+                         vertical_flip=False,
                          zoom_range=0.2)
     mask_datagen = ImageDataGenerator(**mask_data_gen_args)
 
