@@ -66,3 +66,7 @@ docs/_build/
 # PyBuilder
 target/
 tags
+
+# pixi environments
+.pixi
+*.egg-info

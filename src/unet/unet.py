@@ -1,10 +1,5 @@
-import numpy as np
-import tensorflow.keras.backend as K
-import tensorflow as tf
-
 from tensorflow.keras import layers, models
-
-
+import tensorflow.keras.backend as K
 
 def down_block(x, filters, k=(3,3), pad="same", strides=1):
 	c = layers.Conv2D(filters, k, padding=pad, strides=strides, activation="relu")(x)
@@ -35,7 +30,6 @@ def dice_coef_loss(y_true, y_pred):
   
 def UNetModel(image_height,image_width,image_channels=1,num_classes=1):
 	f = [8, 16, 32, 64, 128]
-	# f = [16, 32, 64, 128, 256]
 	inputs = layers.Input((image_height, image_width, image_channels))
 
 	p0 = inputs
@@ -55,7 +49,6 @@ def UNetModel(image_height,image_width,image_channels=1,num_classes=1):
 		t1 = layers.Conv2D(num_classes, (1, 1), padding="same", activation="softmax")(u4)
 	else:
 		t1 = layers.Conv2D(num_classes, (1, 1), padding="same", activation="sigmoid")(u4)
-	# outputs = layers.Reshape((image_width*image_height,num_classes))(t1)
 	
 	model = models.Model(inputs, t1)
 
