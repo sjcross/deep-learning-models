@@ -48,12 +48,12 @@ config.gpu_options.allow_growth = True
 sess = tf.Session(config=config)
 
 train_count = 0
-for path, dirs, files in os.walk(root_path+"Train\\"):
+for path, dirs, files in os.walk(os.path.join(root_path,"Train")):
     train_count += len(files)
 train_size = math.ceil(train_count/batch_size)
 
 valid_count = 0
-for path, dirs, files in os.walk(root_path+"Valid\\"):
+for path, dirs, files in os.walk(os.path.join(root_path,"Valid")):
     valid_count += len(files)
 val_size = math.ceil(valid_count/batch_size)
 
@@ -68,7 +68,7 @@ train_datagen = ImageDataGenerator(**data_gen_args)
 test_datagen = ImageDataGenerator(**data_gen_args)
 
 train_generator = train_datagen.flow_from_directory(
-    root_path+"train\\",
+    os.path.join(root_path,"train"),
     target_size=(image_width, image_height),
     batch_size=batch_size,
     color_mode="grayscale",
@@ -76,7 +76,7 @@ train_generator = train_datagen.flow_from_directory(
 )
 
 valid_generator = test_datagen.flow_from_directory(
-    root_path+"valid\\",
+    os.path.join(root_path,"valid"),
     target_size=(image_width, image_height),
     batch_size=batch_size,
     color_mode="grayscale",
