@@ -19,5 +19,6 @@ scipy = ">=1.7.3,<2"
 tensorflow = "==1.15.0"
 tensorflow-gpu = "==1.15.0"
 numpy = ">=1.21.6,<2"
+six = ">=1.17.0, <2"
 
 

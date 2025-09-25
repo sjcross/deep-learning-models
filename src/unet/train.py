@@ -120,16 +120,3 @@ model.fit_generator(
     callbacks=[model_checkpoint])
 
 model.save_weights(root_path+"UNet_final.hdf5")
-
-args = parser.parse_args()
-
-root_path = args.path
-image_width = args.im_width
-image_height = args.im_height
-image_depth = args.im_depth
-image_channels = args.im_channels
-num_classes = args.num_classes
-batch_size = args.batch_size
-epochs = args.epochs
-model_path = args.model_path
-weighted = args.weighted

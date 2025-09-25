@@ -38,7 +38,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from model import ImageClassificationModel
 
 # Initialising the system
-seed = 2023
+seed = 2024
 random.seed = seed
 tf.seed = seed
 
@@ -67,12 +67,21 @@ data_gen_args = dict(rotation_range=180,
 train_datagen = ImageDataGenerator(**data_gen_args)
 test_datagen = ImageDataGenerator(**data_gen_args)
 
+if num_classes == 2:
+    class_mode = "binary"
+    loss = "binary_crossentropy"
+    metrics = ["binary_accuracy"]
+else:
+    class_mode = "categorical"
+    loss = "categorical_crossentropy"
+    metrics = ["categorical_accuracy"]
+    
 train_generator = train_datagen.flow_from_directory(
     os.path.join(root_path,"train"),
     target_size=(image_width, image_height),
     batch_size=batch_size,
     color_mode="grayscale",
-    class_mode="categorical"
+    class_mode=class_mode
 )
 
 valid_generator = test_datagen.flow_from_directory(
@@ -80,14 +89,18 @@ valid_generator = test_datagen.flow_from_directory(
     target_size=(image_width, image_height),
     batch_size=batch_size,
     color_mode="grayscale",
-    class_mode="categorical"
+    class_mode=class_mode
 )
 
-model_checkpoint = ModelCheckpoint('Classification_currentBest_E{epoch}_CatAcc{categorical_accuracy:.3f}_ValLoss{val_loss:.3f}.hdf5', monitor='categorical_accuracy',verbose=1, save_best_only=True)
+if num_classes == 2:
+    model_checkpoint = ModelCheckpoint('Classification_currentBest_E{epoch}_ValLoss{val_loss:.3f}_Accuracy{binary_accuracy:.3f}.hdf5', monitor='val_loss',verbose=1, save_best_only=True)
+else:
+    model_checkpoint = ModelCheckpoint('Classification_currentBest_E{epoch}_ValLoss{val_loss:.3f}_Accuracy{categorical_accuracy:.3f}.hdf5', monitor='val_loss',verbose=1, save_best_only=True)
+    
 tboard = TensorBoard(log_dir="log",histogram_freq=0, write_graph=True, write_images=False)
 
 model = ImageClassificationModel(image_height,image_width,image_channels=image_channels,num_classes=num_classes)
-model.compile(optimizer="sgd", loss="categorical_crossentropy", metrics=["categorical_accuracy"])
+model.compile(optimizer="adam", loss=loss, metrics=metrics)
 
 if model_path is not None:
     model.load_weights(model_path)

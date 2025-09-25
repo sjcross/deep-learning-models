@@ -20,14 +20,14 @@ def ImageClassificationModel(image_width,image_height,image_channels,num_classes
 	model.add(Activation('relu'))
 	model.add(MaxPooling2D(pool_size=(2, 2)))
 
-	# Fourth Group
+	# Fourth Group 
 	model.add(Flatten())
-	model.add(Dense(64))
-	model.add(Activation('relu'))
-
-	# Fifth Group
+	model.add(Dense(64, activation='relu'))
 	model.add(Dropout(0.5))
-	model.add(Dense(num_classes))
-	model.add(Activation('sigmoid'))
-
+    
+	if num_classes == 2:
+		model.add(Dense(1, activation='sigmoid'))
+	else:
+		model.add(Dense(num_classes, activation='softmax'))
+    
 	return model
