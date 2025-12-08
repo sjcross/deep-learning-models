@@ -40,7 +40,7 @@ import tensorflow.keras.backend as K
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 
 from unet import *
-from fileloading import gen
+from fileloading import FileLoader
 
 # Initialising the system
 seed = 2023
@@ -57,13 +57,16 @@ train_size = math.ceil(len(files)/batch_size)
 path, dirs, files = next(os.walk(os.path.join(root_path,"valid_raw","class1")))
 val_size = math.ceil(len(files)/batch_size)
 
-train_generator = gen(os.path.join(root_path,"train_raw"),os.path.join(root_path,"train_class"),image_height=image_height,image_width=image_width,image_depth=image_depth,image_channels=image_channels,batch_size=batch_size,num_classes=num_classes)
-valid_generator = gen(os.path.join(root_path,"valid_raw"),os.path.join(root_path,"valid_class"),image_height=image_height,image_width=image_width,image_depth=image_depth,image_channels=image_channels,batch_size=batch_size,num_classes=num_classes)
+print("Loading files into memory")
+train_file_loader = FileLoader(os.path.join(root_path,"train_raw"),os.path.join(root_path,"train_class"),image_height=image_height,image_width=image_width,image_depth=image_depth,image_channels=image_channels)
+train_generator = train_file_loader.gen(batch_size=batch_size,num_classes=num_classes)
+valid_file_loader = FileLoader(os.path.join(root_path,"valid_raw"),os.path.join(root_path,"valid_class"),image_height=image_height,image_width=image_width,image_depth=image_depth,image_channels=image_channels)
+valid_generator = valid_file_loader.gen(batch_size=batch_size,num_classes=num_classes)
 
 if num_classes == 1:
     model_checkpoint = ModelCheckpoint('UNet_currentBest_E{epoch}_Acc{acc:.3f}_ValLoss{val_loss:.3f}.hdf5', monitor='val_loss',verbose=1, save_best_only=True)
 else:
-    model_checkpoint = ModelCheckpoint('UNet_currentBest_E{epoch}_CatAcc{categorical_accuracy:.3f}_ValLoss{val_loss:.3f}.hdf5', monitor='val_loss',verbose=1, save_best_only=True)
+    model_checkpoint = ModelCheckpoint('UNet_currentBest_E{epoch}_CatAcc{categorical_accuracy:.3f}_ValLoss{val_loss:.3f}.hdf5', monitor='categorical_accuracy',verbose=1, save_best_only=True)
 
 tboard = TensorBoard(log_dir="log",histogram_freq=0, write_graph=True, write_images=False)
 
@@ -117,6 +120,9 @@ model.fit_generator(
     validation_steps=val_size,
     steps_per_epoch=train_size,
     epochs=epochs,
-    callbacks=[model_checkpoint])
+    callbacks=[model_checkpoint],
+    use_multiprocessing=True,
+    workers=24,
+    max_queue_size=64)
 
 model.save_weights(root_path+"UNet_final.hdf5")

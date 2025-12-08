@@ -15,10 +15,17 @@ python = ">=3.7,<3.8"
 h5py = "==2.10.0"
 imageio = ">=2.31.2,<3"
 protobuf = ">=3.20.0,<4"
+pillow = "<9"
 scipy = ">=1.7.3,<2"
 tensorflow = "==1.15.0"
 tensorflow-gpu = "==1.15.0"
 numpy = ">=1.21.6,<2"
 six = ">=1.17.0, <2"
+
+[feature.stardist.pypi-dependencies]
+stardist = { version = "==0.7.3", extras = ["tf1"] }
+
+[environments]
+stardist = ["stardist"]
 
 
