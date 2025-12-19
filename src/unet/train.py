@@ -103,6 +103,8 @@ else:
         class_weights = [0.01]
         for i in range(num_classes-1):
             class_weights.append(1.0)
+            
+        class_weights[3] = 5
         
         print(class_weights)
 

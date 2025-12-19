@@ -10,6 +10,7 @@ version = "0.1.0"
 
 [dependencies]
 python = ">=3.7,<3.8"
+six = ">=1.16.0,<2"
 
 [pypi-dependencies]
 h5py = "==2.10.0"
