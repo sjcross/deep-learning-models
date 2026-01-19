@@ -35,6 +35,7 @@ import math
 import os
 import random
 
+import numpy as np
 import tensorflow as tf
 import tensorflow.keras.backend as K
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
@@ -100,14 +101,17 @@ else:
 
             return loss
 
-        class_weights = [0.01]
-        for i in range(num_classes-1):
-            class_weights.append(1.0)
-            
-        class_weights[3] = 5
+        masks = next(train_generator)[1]
+        class_weights = np.zeros(masks.shape[3])
+        for slice in range(masks.shape[0]):
+            for class_idx in range(masks.shape[3]):
+                class_weights[class_idx] = class_weights[class_idx] + np.sum(masks[slice,:,:,class_idx])        
         
-        print(class_weights)
-
+        for class_idx in range(masks.shape[3]):
+                class_weights[class_idx] = 1/(1+class_weights[class_idx])
+                
+        print(f'Using weights {class_weights}')
+        
         model.compile(optimizer="adam", loss=weighted_categorical_crossentropy(class_weights), metrics=["categorical_accuracy", dice_coefficient])
 
     else:

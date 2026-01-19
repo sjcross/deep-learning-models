@@ -19,7 +19,7 @@ class FileLoader:
         batches = [next(image_generator) for _ in range(len(image_generator))]
         self.images = np.concatenate(batches, axis=0)
         
-        mask_generator = ImageDataGenerator().flow_from_directory(mask_path, color_mode=color_mode, target_size=image_size, class_mode=None, shuffle=False)
+        mask_generator = ImageDataGenerator().flow_from_directory(mask_path, color_mode='grayscale', target_size=image_size, class_mode=None, shuffle=False)
         batches = [next(mask_generator) for _ in range(len(mask_generator))]
         self.masks = np.concatenate(batches, axis=0)
         
