@@ -22,6 +22,7 @@ tensorflow = "==1.15.0"
 tensorflow-gpu = "==1.15.0"
 numpy = ">=1.21.6,<2"
 six = ">=1.17.0, <2"
+matplotlib = ">=3.5.3, <4"
 
 [feature.stardist.pypi-dependencies]
 stardist = { version = "==0.7.3", extras = ["tf1"] }

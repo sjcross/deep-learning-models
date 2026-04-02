@@ -1,50 +1,75 @@
 from __future__ import print_function, unicode_literals, absolute_import, division
-from stardist.models import Config2D, StarDist2D
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-import os
+import argparse
 import numpy as np
-import tensorflow
+import os
+import sys
 
+from glob import glob
+from tqdm import tqdm
+from tifffile import imread
+from csbdeep.utils import Path, normalize
+
+from tensorflow.keras.callbacks import ModelCheckpoint
+
+from stardist import fill_label_holes, random_label_cmap
+from stardist.models import Config2D, StarDist2D, StarDistData2D
+
+
+parser = argparse.ArgumentParser()
+
+required = parser.add_argument_group('required arguments')
+required.add_argument("-p", "--path", type=str, required=True)
+
+optional = parser.add_argument_group('optional arguments')
+optional.add_argument("-bs", "--batch_size", type=int, required=False, default=1)
+optional.add_argument("-ps", "--patch_size", type=int, required=False, default=800)
+# optional.add_argument("-mp", "--model_path", type=str, required=False, default=None)
+
+args = parser.parse_args()
+
+path = args.path
+batch_size = args.batch_size
+patch_size = args.patch_size
+# model = args.model
+
+# os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 np.random.seed(42)
-path = "C:\\Users\\steph\\Desktop\\test - Copy\\"
-batch_size = 1
-image_width = 320
+lbl_cmap = random_label_cmap() 
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+X = sorted(glob(path+'train/images/*.tif'))
+Y = sorted(glob(path+'train/masks/*.tif'))
+assert all(Path(x).name==Path(y).name for x,y in zip(X,Y))
+X = list(map(imread,X))
+Y = list(map(imread,Y))
+n_channel = 1 if X[0].ndim == 2 else X[0].shape[-1]
 
-class SDGen(tensorflow.keras.Sequential):
-    def __init__(self,image_path,image_size, batch_size):
-        data_gen_args = dict(rotation_range=10,
-                         width_shift_range=0.2,
-                         height_shift_range=0.2,
-                         horizontal_flip=True,
-                         vertical_flip=True,
-                         zoom_range=0.2)
-        
-        self._gen = ImageDataGenerator(**data_gen_args).flow_from_directory(image_path,
-            class_mode=None,
-            seed=42,
-            batch_size=batch_size,
-            color_mode='grayscale',
-            target_size=image_size)
-        
-    def __len__(self):
-        return self._gen.__len__()
+axis_norm = (0,1)   # normalize channels independently
+# axis_norm = (0,1,2) # normalize channels jointly
+if n_channel > 1:
+    print("Normalizing image channels %s." % ('jointly' if axis_norm is None or 2 in axis_norm else 'independently'))
+    sys.stdout.flush()
 
-    def __getitem__(self,index):
-        return self._gen.__getitem__(index)[0,:,:,0].astype(np.int8)
+X = [normalize(x,1,99.8,axis=axis_norm) for x in tqdm(X)]
+Y = [fill_label_holes(y) for y in tqdm(Y)]
 
-    def on_epoch_end(self):
-        return self._gen.on_epoch_end()
+assert len(X) > 1, "not enough training data"
+rng = np.random.RandomState(42)
+ind = rng.permutation(len(X))
+n_val = max(1, int(round(0.15 * len(ind))))
+ind_train, ind_val = ind[:-n_val], ind[-n_val:]
+X_val, Y_val = [X[i] for i in ind_val]  , [Y[i] for i in ind_val]
+X_trn, Y_trn = [X[i] for i in ind_train], [Y[i] for i in ind_train] 
+print('number of images: %3d' % len(X))
+print('- training:       %3d' % len(X_trn))
+print('- validation:     %3d' % len(X_val))
 
-train_image_generator = SDGen(path+"Train_raw\\",image_size=(image_width,image_width),batch_size=batch_size)
-train_class_generator = SDGen(path+"Train_class\\",image_size=(image_width,image_width),batch_size=batch_size)
-valid_image_generator = SDGen(path+"Valid_raw\\",image_size=(image_width,image_width),batch_size=batch_size)
-valid_class_generator = SDGen(path+"Valid_class\\",image_size=(image_width,image_width),batch_size=batch_size)
+conf = Config2D(n_channel_in=n_channel, train_batch_size=batch_size, train_patch_size=(patch_size,patch_size), train_shape_completion=False)
+print(conf)
 
-conf = Config2D(n_channel_in=1, train_batch_size=4, train_shape_completion=False)
 model = StarDist2D(conf, name='stardist_no_shape_completion', basedir='models')
-model.train(train_image_generator,train_class_generator,validation_data=(valid_image_generator,valid_class_generator))
-# model.load_weights("C:\\Users\\steph\\Documents\\Programming\\Python Projects\\trainstardist\\models\\stardist_no_shape_completion\\weights_now.h5")
-model.export_TF("C:\\Users\\steph\\Desktop\\testmodel2.zip")
+
+model_checkpoint = ModelCheckpoint('UNet_currentBest_E{epoch}_acc{acc:.3f}_ValLoss{val_loss:.3f}.hdf5', monitor='val_loss',verbose=1, save_best_only=False)
+model.train(X_trn,Y_trn,validation_data=(X_val,Y_val))
+
+model.export_TF()

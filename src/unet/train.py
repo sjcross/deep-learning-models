@@ -40,7 +40,7 @@ import tensorflow as tf
 import tensorflow.keras.backend as K
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 
-from unet import *
+from unet import UNetModel
 from fileloading import FileLoader
 
 # Initialising the system
@@ -59,15 +59,15 @@ path, dirs, files = next(os.walk(os.path.join(root_path,"valid_raw","class1")))
 val_size = math.ceil(len(files)/batch_size)
 
 print("Loading files into memory")
-train_file_loader = FileLoader(os.path.join(root_path,"train_raw"),os.path.join(root_path,"train_class"),image_height=image_height,image_width=image_width,image_depth=image_depth,image_channels=image_channels)
-train_generator = train_file_loader.gen(batch_size=batch_size,num_classes=num_classes)
-valid_file_loader = FileLoader(os.path.join(root_path,"valid_raw"),os.path.join(root_path,"valid_class"),image_height=image_height,image_width=image_width,image_depth=image_depth,image_channels=image_channels)
-valid_generator = valid_file_loader.gen(batch_size=batch_size,num_classes=num_classes)
+train_file_loader = FileLoader(os.path.join(root_path,"train_raw"),os.path.join(root_path,"train_class"),image_height=image_height,image_width=image_width,image_depth=image_depth,image_channels=image_channels, num_classes=num_classes, batch_size=batch_size, shuffle=True)
+# train_generator = train_file_loader.gen(batch_size=batch_size,num_classes=num_classes)
+valid_file_loader = FileLoader(os.path.join(root_path,"valid_raw"),os.path.join(root_path,"valid_class"),image_height=image_height,image_width=image_width,image_depth=image_depth,image_channels=image_channels, num_classes=num_classes, batch_size=batch_size, shuffle=False)
+# valid_generator = valid_file_loader.gen(batch_size=batch_size,num_classes=num_classes)
 
 if num_classes == 1:
     model_checkpoint = ModelCheckpoint('UNet_currentBest_E{epoch}_Acc{acc:.3f}_ValLoss{val_loss:.3f}.hdf5', monitor='val_loss',verbose=1, save_best_only=True)
 else:
-    model_checkpoint = ModelCheckpoint('UNet_currentBest_E{epoch}_CatAcc{categorical_accuracy:.3f}_ValLoss{val_loss:.3f}.hdf5', monitor='categorical_accuracy',verbose=1, save_best_only=True)
+    model_checkpoint = ModelCheckpoint('UNet_currentBest_E{epoch}_CatAcc{categorical_accuracy:.3f}_ValLoss{val_loss:.3f}.hdf5', monitor='val_loss',verbose=1, save_best_only=True)
 
 tboard = TensorBoard(log_dir="log",histogram_freq=0, write_graph=True, write_images=False)
 
@@ -76,59 +76,61 @@ model = UNetModel(image_height,image_width,image_channels=image_channels,num_cla
 if num_classes == 1:
     model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["acc"])
 else:
-    if weighted:
-        def dice_coefficient(y_true, y_pred, smooth=1):
-            y_true_f = K.flatten(y_true)
-            y_pred_f = K.flatten(y_pred)
-            intersection = K.sum(y_true_f * y_pred_f)
-            return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
+    # if weighted:
+    #     def dice_coefficient(y_true, y_pred, smooth=1):
+    #         y_true_f = K.flatten(y_true)
+    #         y_pred_f = K.flatten(y_pred)
+    #         intersection = K.sum(y_true_f * y_pred_f)
+    #         return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
 
-        def weighted_categorical_crossentropy(weights):
-            weights = K.variable(weights)
+    #     def weighted_categorical_crossentropy(weights):
+    #         weights = K.variable(weights)
         
-            def loss(y_true, y_pred):
-                # Scale predictions so that the class probabilities of each sample sum to 1
-                y_pred /= K.sum(y_pred, axis=-1, keepdims=True)
+    #         def loss(y_true, y_pred):
+    #             # Scale predictions so that the class probabilities of each sample sum to 1
+    #             y_pred /= K.sum(y_pred, axis=-1, keepdims=True)
             
-                # Clip predictions to prevent log(0)
-                y_pred = K.clip(y_pred, K.epsilon(), 1 - K.epsilon())
+    #             # Clip predictions to prevent log(0)
+    #             y_pred = K.clip(y_pred, K.epsilon(), 1 - K.epsilon())
             
-                # Calculate the loss
-                loss = y_true * K.log(y_pred) * weights
+    #             # Calculate the loss
+    #             loss = y_true * K.log(y_pred) * weights
             
-                # Return the mean loss over all sampless
-                return -K.sum(loss, -1)
+    #             # Return the mean loss over all sampless
+    #             return -K.sum(loss, -1)
 
-            return loss
+    #         return loss
 
-        masks = next(train_generator)[1]
-        class_weights = np.zeros(masks.shape[3])
-        for slice in range(masks.shape[0]):
-            for class_idx in range(masks.shape[3]):
-                class_weights[class_idx] = class_weights[class_idx] + np.sum(masks[slice,:,:,class_idx])        
+    #     masks = next(train_generator)[1]
+    #     class_weights = np.zeros(masks.shape[3])
+    #     for slice in range(masks.shape[0]):
+    #         for class_idx in range(masks.shape[3]):
+    #             class_weights[class_idx] = class_weights[class_idx] + np.sum(masks[slice,:,:,class_idx])        
         
-        for class_idx in range(masks.shape[3]):
-                class_weights[class_idx] = 1/(1+class_weights[class_idx])
+    #     for class_idx in range(masks.shape[3]):
+    #             class_weights[class_idx] = 1/(1+class_weights[class_idx])
                 
-        print(f'Using weights {class_weights}')
+    #     print(f'Using weights {class_weights}')
         
-        model.compile(optimizer="adam", loss=weighted_categorical_crossentropy(class_weights), metrics=["categorical_accuracy", dice_coefficient])
+    #     model.compile(optimizer="adam", loss=weighted_categorical_crossentropy(class_weights), metrics=["categorical_accuracy", dice_coefficient])
 
-    else:
-        model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["categorical_accuracy"])
+    # else:
+    model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["categorical_accuracy"])
 
 if model_path is not None:
     model.load_weights(model_path)
 
+val_size = 20
+train_size = 20
 model.fit_generator(
-    generator=train_generator,
-    validation_data=valid_generator,
-    validation_steps=val_size,
-    steps_per_epoch=train_size,
+    generator=train_file_loader,
+    validation_data=valid_file_loader,
+    # validation_steps=val_size,
+    # steps_per_epoch=train_size,
     epochs=epochs,
     callbacks=[model_checkpoint],
-    use_multiprocessing=True,
-    workers=24,
+    use_multiprocessing=False,
+    workers=4,
     max_queue_size=64)
 
 model.save_weights(root_path+"UNet_final.hdf5")

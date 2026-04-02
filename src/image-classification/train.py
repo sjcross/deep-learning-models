@@ -9,7 +9,7 @@ required.add_argument("-ih", "--im_height", type=int, required=True)
 
 optional = parser.add_argument_group('optional arguments')
 optional.add_argument("-ic", "--im_channels", type=int, required=False, default=1)
-optional.add_argument("-nc", "--num_classes", type=int, required=False, default=1)
+optional.add_argument("-nc", "--num_classes", type=int, required=False, default=2)
 optional.add_argument("-bs", "--batch_size", type=int, required=False, default=1)
 optional.add_argument("-e", "--epochs", type=int, required=False, default=1000)
 optional.add_argument("-mp", "--model_path", type=str, required=False, default=None)
@@ -48,12 +48,12 @@ config.gpu_options.allow_growth = True
 sess = tf.Session(config=config)
 
 train_count = 0
-for path, dirs, files in os.walk(os.path.join(root_path,"Train")):
+for path, dirs, files in os.walk(os.path.join(root_path,"train")):
     train_count += len(files)
 train_size = math.ceil(train_count/batch_size)
 
 valid_count = 0
-for path, dirs, files in os.walk(os.path.join(root_path,"Valid")):
+for path, dirs, files in os.walk(os.path.join(root_path,"valid")):
     valid_count += len(files)
 val_size = math.ceil(valid_count/batch_size)
 
